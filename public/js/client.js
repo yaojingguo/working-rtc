@@ -4,11 +4,18 @@ var audioSource = document.querySelector("select#audioSource");
 var audioOutput = document.querySelector("select#audioOutput");
 var videoSource = document.querySelector("select#videoSource");
 var filterSelect = document.querySelector("select#filter");
+var snapshot = document.querySelector("button#snapshot");
+var picture = document.querySelector("canvas#picture");
 
-var videoPlay = document.querySelector("video#player");
+picture.width = 640;
+picture.height = 480;
+
+// var videoPlay = document.querySelector("video#player");
+var audioPlay = document.querySelector("audio#audioplayer");
 
 function gotMediaStream(stream) {
-  videoPlay.srcObject = stream;
+  // videoPlay.srcObject = stream;
+  audioPlay.srcObject = stream;
   return navigator.mediaDevices.enumerateDevices();
 }
 
@@ -33,8 +40,6 @@ function handleError(err) {
   console.log("getUserMedia error:", err);
 }
 
-var counter = 0;
-
 function start() {
   if (!navigator.mediaDevices ||
       !navigator.mediaDevices.getUserMedia) {
@@ -42,23 +47,24 @@ function start() {
   } else {
     var deviceId = videoSource.value;
     // alert("deviceId: " + deviceId);
+    /*
     var constraints = {
       video: {
         width: 640,
         height: 480,
         frameRate: 30,
-        // facingMode: "enviroment",
         deviceId: {exact: deviceId ? deviceId : undefined}
-        // deviceId: {exact: counter % 2 == 0 ? "EE51504AB027730094371EB63B00BBBB2D4F51F1" : "C6926C4CA2C2BE41665D3080147F43D8E8124720"}
       },
       audio: {
         noiseSuppression: true,
         echoCancellation: true
       }
     };
-    // alert("counter: " + counter);
-    // alert("constraints: " + JSON.stringify(constraints));
-    counter += 1;
+    */
+    var constraints = {
+      video: false,
+      audio: true
+    };
 
     navigator.mediaDevices.getUserMedia(constraints)
       .then(gotMediaStream)
@@ -72,4 +78,10 @@ videoSource.onchange = start;
 
 filterSelect.onchange = function() {
   videoPlay.className = filterSelect.value;
+}
+
+snapshot.onclick = function() {
+  picture.className = filterSelect.value;
+  picture.getContext("2d").drawImage(videoPlay, 0, 0,
+      picture.width, picture.height);
 }
