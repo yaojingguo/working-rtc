@@ -14,7 +14,7 @@ var divContraints = document.querySelector("div#constraints");
 var buffer;
 var mediaRecorder;
 
-var recvideo = document.querySelector("video#recplay");
+var recvideo = document.querySelector("video#recplayer");
 var btnRecord = document.querySelector("button#record");
 var btnPlay = document.querySelector("button#recplay");
 var btnDownload = document.querySelector("button#download");
@@ -101,7 +101,7 @@ snapshot.onclick = function() {
 */
 
 function handleDataAvailable(e) {
-  if (e && e.data.datasize > 0) {
+  if (e && e.data.size > 0) {
     buffer.push(e.data);
   }
 }
@@ -116,13 +116,13 @@ function startRecord() {
     return;
   }
   try {
-    var mediaRecorder = new MediaRecorder(window.stream, options);
+    mediaRecorder = new MediaRecorder(window.stream, options);
   } catch(e) {
     console.error("failed to create MediaRecorder");
     return;
   }
   MediaRecorder.ondataavailable = handleDataAvailable;
-  MediaRecorder.start(10);
+  mediaRecorder.start(10);
 }
 
 function stopRecord() {
@@ -130,7 +130,7 @@ function stopRecord() {
 }
 
 btnRecord.onclick = () => {
-  if (btnRecord.textContent ==== "Start Record") {
+  if (btnRecord.textContent === "Start Record") {
     startRecord();
     btnRecord.textContent = "Stop Record";
     btnPlay.disabled = true;
@@ -140,6 +140,7 @@ btnRecord.onclick = () => {
     btnRecord.textContent = "Start Record";
     btnPlay.disabled = false;
     btnDownload.disabled = false;
+  }
 };
 
 
@@ -149,5 +150,5 @@ btnPlay.onclick = () => {
   recvideo.srcObject = null;
   recvideo.controls = true;
   recvideo.play();
-}
+};
 
