@@ -4,18 +4,22 @@ var audioSource = document.querySelector("select#audioSource");
 var audioOutput = document.querySelector("select#audioOutput");
 var videoSource = document.querySelector("select#videoSource");
 var filterSelect = document.querySelector("select#filter");
-var snapshot = document.querySelector("button#snapshot");
-var picture = document.querySelector("canvas#picture");
+var divContraints = document.querySelector("div#constraints");
+// var snapshot = document.querySelector("button#snapshot");
+// var picture = document.querySelector("canvas#picture");
 
-picture.width = 640;
-picture.height = 480;
+// picture.width = 640;
+// picture.height = 480;
 
-// var videoPlay = document.querySelector("video#player");
-var audioPlay = document.querySelector("audio#audioplayer");
+var videoPlay = document.querySelector("video#player");
+// var audioPlay = document.querySelector("audio#audioplayer");
 
 function gotMediaStream(stream) {
-  // videoPlay.srcObject = stream;
-  audioPlay.srcObject = stream;
+  videoPlay.srcObject = stream;
+  // audioPlay.srcObject = stream;
+  var videoTrack = stream.getVideoTracks()[0];
+  var videoContraints = videoTrack.getSettings();
+  divContraints.textContent = JSON.stringify(videoContraints, null, 2);
   return navigator.mediaDevices.enumerateDevices();
 }
 
@@ -46,13 +50,11 @@ function start() {
     console.log("enumerateDevices not supported");
   } else {
     var deviceId = videoSource.value;
-    // alert("deviceId: " + deviceId);
-    /*
     var constraints = {
       video: {
         width: 640,
         height: 480,
-        frameRate: 30,
+        frameRate: 15,
         deviceId: {exact: deviceId ? deviceId : undefined}
       },
       audio: {
@@ -60,11 +62,12 @@ function start() {
         echoCancellation: true
       }
     };
-    */
+    /*
     var constraints = {
-      video: false,
+      video: true,
       audio: true
     };
+    */
 
     navigator.mediaDevices.getUserMedia(constraints)
       .then(gotMediaStream)
@@ -80,8 +83,10 @@ filterSelect.onchange = function() {
   videoPlay.className = filterSelect.value;
 }
 
+/*
 snapshot.onclick = function() {
   picture.className = filterSelect.value;
   picture.getContext("2d").drawImage(videoPlay, 0, 0,
       picture.width, picture.height);
 }
+*/
