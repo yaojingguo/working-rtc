@@ -11,10 +11,19 @@ var divContraints = document.querySelector("div#constraints");
 // picture.width = 640;
 // picture.height = 480;
 
+var buffer;
+var mediaRecorder;
+
+var recvideo = document.querySelector("video#recplay");
+var btnRecord = document.querySelector("button#record");
+var btnPlay = document.querySelector("button#recplay");
+var btnDownload = document.querySelector("button#download");
+
 var videoPlay = document.querySelector("video#player");
 // var audioPlay = document.querySelector("audio#audioplayer");
 
 function gotMediaStream(stream) {
+  window.stream = stream;
   videoPlay.srcObject = stream;
   // audioPlay.srcObject = stream;
   var videoTrack = stream.getVideoTracks()[0];
@@ -90,3 +99,55 @@ snapshot.onclick = function() {
       picture.width, picture.height);
 }
 */
+
+function handleDataAvailable(e) {
+  if (e && e.data.datasize > 0) {
+    buffer.push(e.data);
+  }
+}
+
+function startRecord() {
+  buffer = [];
+  var options = {
+    mimeType: "video/webm;codecs=vp8"
+  }
+  if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+    console.error(`${optoins.mimeType} not supported`);
+    return;
+  }
+  try {
+    var mediaRecorder = new MediaRecorder(window.stream, options);
+  } catch(e) {
+    console.error("failed to create MediaRecorder");
+    return;
+  }
+  MediaRecorder.ondataavailable = handleDataAvailable;
+  MediaRecorder.start(10);
+}
+
+function stopRecord() {
+  mediaRecorder.stop();
+}
+
+btnRecord.onclick = () => {
+  if (btnRecord.textContent ==== "Start Record") {
+    startRecord();
+    btnRecord.textContent = "Stop Record";
+    btnPlay.disabled = true;
+    btnDownload.disabled = true;
+  } else {
+    stopRecord();
+    btnRecord.textContent = "Start Record";
+    btnPlay.disabled = false;
+    btnDownload.disabled = false;
+};
+
+
+btnPlay.onclick = () => {
+  var blob = new Blob(buffer, {type: "video/webm"});
+  recvideo.src = window.URL.createObjectURL(blob);
+  recvideo.srcObject = null;
+  recvideo.controls = true;
+  recvideo.play();
+}
+
