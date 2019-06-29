@@ -121,7 +121,7 @@ function startRecord() {
     console.error("failed to create MediaRecorder");
     return;
   }
-  MediaRecorder.ondataavailable = handleDataAvailable;
+  mediaRecorder.ondataavailable = handleDataAvailable;
   mediaRecorder.start(10);
 }
 
